@@ -11,6 +11,8 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static('public'));
 
+const NOTES_DB_PATH = './db/db.json';
+
 // get the next available number to use for an id
 function getNoteId(notes) {
     // first id to be used
@@ -28,6 +30,43 @@ function getNoteId(notes) {
     return id;
 }
 
+function saveNotes(data) {
+    return new Promise((resolve, reject) => {
+        fs.writeFile(NOTES_DB_PATH, JSON.stringify(data), err => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            resolve({
+                ok: true,
+                message: 'Notes have been saved to the database.'
+            })
+        })
+    });
+}
+
+function readNotes() {
+    return new Promise((resolve, reject) => {
+        fs.readFile(NOTES_DB_PATH, 'utf-8', (err, data) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            if (!data) {
+                data = [];
+            } else {
+                data = JSON.parse(data);
+            }
+            resolve({
+                ok: true,
+                message: 'Notes file read',
+                data: data
+            });
+        });
+    });
+
+}
+
 // home page for application
 app.get('/', (req, res) =>
     res.sendFile(path.join(__dirname, '/public/index.html'))
@@ -39,25 +78,14 @@ app.get('/notes', (req, res) =>
 );
 
 app.get('/api/notes', (req, res) => {
-    fs.readFile('./db/db.json', 'utf8', (err, data) => {
-        if (err) throw err;
-        if (!data) {
-            data = [];
-        } else {
-            data = JSON.parse(data);
-        }
-        res.json(data);
-    })
+    readNotes().then((readResponse) => {
+        res.json(readResponse.data);
+    });
 });
 
 app.post('/api/notes', (req, res) => {
-    fs.readFile('./db/db.json', 'utf-8', (err, data) => {
-        if (err) throw err;
-        if (!data) {
-            data = [];
-        } else {
-            data = JSON.parse(data);
-        }
+    readNotes().then((readResponse) => {
+        let data = readResponse.data;
         const { title, text } = req.body;
         const newNote = {
             title: title,
@@ -65,33 +93,31 @@ app.post('/api/notes', (req, res) => {
             id: getNoteId(data)
         }
         data.push(newNote);
-        fs.writeFile('./db/db.json', JSON.stringify(data), (err) => {
-            if (err) throw err;
-        });
-        res.json(newNote);
+        return saveNotes(data);
+    }).then((writeResponse) => {
+        res.json('Saved new note.');
+    }).catch(err => {
+        console.log(err);
+        res.json('Failed to save new note.');
     });
 });
 
 app.delete('/api/notes/:id', (req, res) => {
-    fs.readFile('./db/db.json', 'utf-8', (err, data) => {
-        if (err) throw err;
-        if (!data) {
-            data = [];
-        } else {
-            data = JSON.parse(data);
-        }
+    readNotes().then((readResponse) => {
+        let data = readResponse.data;
         const noteId = req.params.id;
-        console.log(noteId);
         for (let i = 0; i < data.length; i++) {
             if (data[i].id == noteId) {
                 data.splice(i, 1);
-                fs.writeFile('./db/db.json', JSON.stringify(data), (err) => {
-                    if (err) throw err;
-                    console.log('Item removed and database saved.');
-                });
-                res.json('Note has been deleted');
+                return saveNotes(data);
             }
         }
+        throw new Error('Invalid ID. Failed to delete note.');
+    }).then((writeResponse) => {
+        res.json('Note deleted from the database.');
+    }).catch(err => {
+        console.log(err);
+        res.json(err.message);
     })
 });
 
