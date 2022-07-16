@@ -11,6 +11,19 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static('public'));
 
+// get the next available number to use for an id
+function getNoteId(notes){
+    if (!notes){
+        return 0;
+    }
+    const noteIds = notes.map((note) => {return note.id;});
+    let id = 0;
+    while (noteIds.indexOf(id) >= 0){
+        id++;
+    }
+    return id;
+}
+
 // home page for application
 app.get('/', (req, res) =>
     res.sendFile(path.join(__dirname, '/public/index.html'))
@@ -41,11 +54,17 @@ app.post('/api/notes', (req, res) => {
         } else {
             data = JSON.parse(data);
         }
-        data.push(req.body);
+        const {title, text} = req.body;
+        const newNote = {
+            title: title,
+            text: text,
+            id: getNoteId(data)
+        }
+        data.push(newNote);
         fs.writeFile('./db/db.json', JSON.stringify(data), (err) => {
             if (err) throw err;
         });
-        res.json(req.body);
+        res.json(newNote);
     });
 });
 
