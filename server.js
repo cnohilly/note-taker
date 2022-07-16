@@ -12,15 +12,19 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
 // get the next available number to use for an id
-function getNoteId(notes){
-    if (!notes){
-        return 0;
+function getNoteId(notes) {
+    // first id to be used
+    let id = 1;
+    // notes should an array so this conditional will return true as long as notes is not empty
+    if (notes) {
+        // maps the ids of each note into an array
+        const noteIds = notes.map((note) => { return note.id; });
+        // while the id is already in use, the id will increment
+        while (noteIds.indexOf(id) >= 0) {
+            id++;
+        }
     }
-    const noteIds = notes.map((note) => {return note.id;});
-    let id = 0;
-    while (noteIds.indexOf(id) >= 0){
-        id++;
-    }
+    // returns the lowest available id not currently in use
     return id;
 }
 
@@ -37,7 +41,7 @@ app.get('/notes', (req, res) =>
 app.get('/api/notes', (req, res) => {
     fs.readFile('./db/db.json', 'utf8', (err, data) => {
         if (err) throw err;
-        if (!data){
+        if (!data) {
             data = [];
         } else {
             data = JSON.parse(data);
@@ -49,12 +53,12 @@ app.get('/api/notes', (req, res) => {
 app.post('/api/notes', (req, res) => {
     fs.readFile('./db/db.json', 'utf-8', (err, data) => {
         if (err) throw err;
-        if (!data){
+        if (!data) {
             data = [];
         } else {
             data = JSON.parse(data);
         }
-        const {title, text} = req.body;
+        const { title, text } = req.body;
         const newNote = {
             title: title,
             text: text,
@@ -71,7 +75,7 @@ app.post('/api/notes', (req, res) => {
 app.delete('/api/notes/:id', (req, res) => {
     fs.readFile('./db/db.json', 'utf-8', (err, data) => {
         if (err) throw err;
-        if (!data){
+        if (!data) {
             data = [];
         } else {
             data = JSON.parse(data);
