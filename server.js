@@ -27,7 +27,15 @@ app.get('/api/notes', (req,res) => {
         console.log(data);
         res.json(JSON.parse(data));
     })
-})
+});
+
+app.post('/api/notes', (req,res) => {
+    fs.readFile('./db/db.json','utf-8', (err,data) => {
+        if (err) throw err;
+        console.log(req.body);
+        res.json(req.body);
+    })
+});
 
 
 app.listen(PORT, () =>
