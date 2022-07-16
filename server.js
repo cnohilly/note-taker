@@ -24,7 +24,6 @@ app.get('/notes', (req, res) =>
 app.get('/api/notes', (req,res) => {
     fs.readFile('./db/db.json','utf8', (err,data) => {
         if (err) throw err;
-        console.log(data);
         res.json(JSON.parse(data));
     })
 });
@@ -32,9 +31,13 @@ app.get('/api/notes', (req,res) => {
 app.post('/api/notes', (req,res) => {
     fs.readFile('./db/db.json','utf-8', (err,data) => {
         if (err) throw err;
-        console.log(req.body);
+        data = JSON.parse(data);
+        data.push(req.body);
+        fs.writeFile('./db/db.json',JSON.stringify(data), (err) => {
+            if (err) throw err;
+        });
         res.json(req.body);
-    })
+    });
 });
 
 
