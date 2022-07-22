@@ -1,12 +1,11 @@
 # 11 Express.js: Note Taker
 
-## Your Task
+## Description
 
-Your challenge is to create an application called Note Taker that can be used to write and save notes. This application will use an Express.js back end and will save and retrieve note data from a JSON file.
+This project was to create an application that has backend API to interface with the front end code to create, display and save notes written by the user. The front end code of this project was provided, and the primary code written was the server.js file and small changes in the supplied index.js file to improve functionality or reduce errors. This application utilizes Express.js to be the middleware connecting the front and back end, and saves the notes in a JSON file. This project also had to be deployed live to Heroku.
 
-The application’s front end has already been created. It's your job to build the back end, connect the two, and then deploy the entire application to Heroku.
+The starter code supplied can be seen here: [the starter code](https://github.com/coding-boot-camp/miniature-eureka).
 
-Before you start, clone [the starter code](https://github.com/coding-boot-camp/miniature-eureka).
 
 ## User Story
 
@@ -42,35 +41,7 @@ The following images show the web application's appearance and functionality:
 
 ![Note titled “Balance accounts” reads, “Balance account books by end of day Monday,” with other notes listed on the left.](./assets/11-express-homework-demo-02.png)
 
-## Getting Started
+## Product
 
-The application should have a `db.json` file on the back end, which will be used to store and retrieve notes using the `fs` module.
+This application was deployed and can be seen and used via Heroku. This is the deployed application: [Note Taker](http://calm-harbor-02467.herokuapp.com/)
 
-The following HTML routes should be created:
-
-* `GET /notes` should return the `notes.html` file.
-
-* `GET *` should return the `index.html` file.
-
-The following API routes should be created:
-
-* `GET /api/notes` should read the `db.json` file and return all saved notes as JSON.
-
-* `POST /api/notes` should receive a new note to save on the request body, add it to the `db.json` file, and then return the new note to the client. You'll need to find a way to give each note a unique id when it's saved (look into `npm` packages that could do this for you).
-
-## Bonus
-
-You haven’t learned how to handle DELETE requests, but this application has that functionality in the front end. As a bonus, see if you can add the DELETE route to the application using the following guideline:
-
-* `DELETE /api/notes/:id` should receive a query parameter containing the id of a note to delete. In order to delete a note, you'll need to read all notes from the `db.json` file, remove the note with the given `id` property, and then rewrite the notes to the `db.json` file.
-
-## Review
-
-You are required to submit BOTH of the following for review:
-
-* The URL of the functional, deployed application.
-
-* The URL of the GitHub repository. Give the repository a unique name and include a README describing the project.
-
-- - -
-© 2022 Trilogy Education Services, LLC, a 2U, Inc. brand. Confidential and Proprietary. All Rights Reserved.
